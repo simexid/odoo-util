@@ -1,0 +1,2 @@
+org.simexid.odoo.SimexidOdooAutoConfiguration
+org.simexid.odoo.connector.CrmXmlRpcConnector

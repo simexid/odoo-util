@@ -1,0 +1,7 @@
+org.simexid.odoo
+org.simexid.odoo.connector
+org.simexid.odoo.controller
+org.simexid.odoo.enums
+org.simexid.odoo.model
+org.simexid.odoo.model.deserializer
+org.simexid.odoo.service.impl
