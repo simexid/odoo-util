@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.simexid.odoo"},{"l":"org.simexid.odoo.connector"},{"l":"org.simexid.odoo.controller"},{"l":"org.simexid.odoo.enums"},{"l":"org.simexid.odoo.model"},{"l":"org.simexid.odoo.model.deserializer"},{"l":"org.simexid.odoo.service.impl"}];updateSearchResults();
