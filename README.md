@@ -48,8 +48,6 @@ You can extends the CrmServiceImpl class and override the methods you want to us
 
 ```java
 
-import org.simexid.odoo.model.SaleOrderLineHook;
-
 @Primary
 @Service
 public class OdooCRMServiceImpl extends CrmServiceImpl {
@@ -81,6 +79,24 @@ public class OdooCRMServiceImpl extends CrmServiceImpl {
             }
         }
     }
+}
+```
+
+and then:
+```java
+@Component
+public class MyImplementation {
+private final OdooCRMServiceImpl odooCRMService;
+
+MyImplementation(OdooCRMServiceImpl odooCRMService) {
+this.odooCRMService = odooCRMService;
+}
+
+CrmSearchEnum.SearchField field = CrmSearchEnum.SearchField.name;
+CrmSearchEnum.SearchOperator criteria = CrmSearchEnum.SearchOperator.equal;
+String search = "my@email.com;
+List<Customer> = odooCRMService.getPartner(field, criteria, search, null);
+
 }
 ```
 
