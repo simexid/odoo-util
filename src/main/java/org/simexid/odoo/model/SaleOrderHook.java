@@ -9,12 +9,21 @@ import java.util.List;
  */
 public class SaleOrderHook {
 
+    /**
+     * Input action from odoo Server Action
+     */
     @JsonProperty("_action")
     private String action;
 
+    /**
+     * ID of the action
+     */
     @JsonProperty("_id")
     private int id;
 
+    /**
+     * Model used for the action
+     */
     @JsonProperty("_model")
     private String model;
 
@@ -28,12 +37,10 @@ public class SaleOrderHook {
     private String dateOrder;
 
     @JsonProperty("order_line")
-    private List<Object> orderLine;  // Adatta il tipo se hai una struttura specifica per `order_line`
+    private List<Object> orderLine;
 
     @JsonProperty("partner_id")
     private int partnerId;
-
-    // Getter e setter
 
     public String getAction() {
         return action;

@@ -7,7 +7,7 @@
     <groupId>org.simexid</groupId>
     <artifactId>odoo-util</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>odoo-util</name>
     <description>A library for simplifying connection with odoo CRM</description>
     <url>https://github.com/simexid/odoo-util.git</url>

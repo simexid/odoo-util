@@ -17,6 +17,10 @@ public class Customer {
     private String email;
     @SerializedName("country_id")
     private Object countryId;
+    @SerializedName("company_name")
+    private String companyName;
+    @SerializedName("country_code")
+    private String countryCode;
 
     public Customer() {}
 
@@ -98,6 +102,22 @@ public class Customer {
 
     public void setCountryId(Object countryId) {
         this.countryId = countryId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
 }
