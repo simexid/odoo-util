@@ -8,7 +8,6 @@ import org.simexid.odoo.enums.CrmSearchEnum;
 import org.simexid.odoo.model.Customer;
 import org.simexid.odoo.model.SaleOrder;
 import org.simexid.odoo.model.SaleOrderLine;
-import org.simexid.odoo.model.SaleOrderLineHook;
 import org.simexid.odoo.model.deserializer.PartnerDeserializer;
 import org.simexid.odoo.model.deserializer.ProductDeserializer;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
