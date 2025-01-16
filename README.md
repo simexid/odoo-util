@@ -20,12 +20,12 @@ Add the Maven dependency to your project (pom.xml):
 <dependency>
     <groupId>com.simexid</groupId>
     <artifactId>odoo-util</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 For Gradle users, add this dependency to your build.gradle file:
 ```groovy
-implementation 'org.simexid.keycloak:odoo-util:0.0.1'
+implementation 'org.simexid.keycloak:odoo-util:0.0.3'
 ```
 
 ## Configuration
