@@ -29,7 +29,7 @@ public class SimexidOdooConfigurationProperties {
      */
     String odooDb;
     /**
-     * Whether the API is enabled or not. Thi enable the spring controller and make the services available
+     * Whether the API is enabled or not. This enables the spring controller and make the services available
      */
     Boolean apiEnabled;
     /**
