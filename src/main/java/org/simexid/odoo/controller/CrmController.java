@@ -37,8 +37,10 @@ public class CrmController {
      * the api is used for intercept odoo webhooks for a sale order
      */
     @PostMapping("/webhooks/saleorder")
-    public ResponseEntity<Void> webhooksSaleorder(@RequestBody SaleOrderHook input, @RequestParam("apikey") String key) {
-        return webhooksAction(input, key);
+    public ResponseEntity<Void> webhooksSaleorder(@RequestBody SaleOrderHook input,
+                                                  @RequestParam(value = "apikey", required = false) String key,
+                                                  @RequestHeader(value = "Authorization", required = false) String authorization) {
+        return webhooksAction(input, key, authorization);
     }
 
     /**
@@ -49,8 +51,10 @@ public class CrmController {
      * the api is used for intercept odoo webhooks for a sale order line
      */
     @PostMapping("/webhooks/saleorderline")
-    public ResponseEntity<Void> webhooksSaleorderline(@RequestBody SaleOrderLineHook input, @RequestParam("apikey") String key) {
-        return webhooksAction(input, key);
+    public ResponseEntity<Void> webhooksSaleorderline(@RequestBody SaleOrderLineHook input,
+                                                      @RequestParam(value = "apikey", required = false) String key,
+                                                      @RequestHeader(value = "Authorization", required = false) String authorization) {
+        return webhooksAction(input, key, authorization);
     }
 
     /**
@@ -61,8 +65,10 @@ public class CrmController {
      * the api is used for intercept odoo webhooks for a customer
      */
     @PostMapping("/webhooks/partner")
-    public ResponseEntity<Void> webhooksPartner(@RequestBody CustomerHook input, @RequestParam("apikey") String key) {
-        return webhooksAction(input, key);
+    public ResponseEntity<Void> webhooksPartner(@RequestBody CustomerHook input,
+                                                @RequestParam(value = "apikey", required = false) String key,
+                                                @RequestHeader(value = "Authorization", required = false) String authorization) {
+        return webhooksAction(input, key, authorization);
     }
 
     /**
@@ -73,8 +79,10 @@ public class CrmController {
      * the api is used for intercept odoo webhooks for a generic object
      */
     @PostMapping("/webhooks/generic")
-    public ResponseEntity<Void> webhooksGeneric(@RequestBody Object input, @RequestParam("apikey") String key) {
-        return webhooksAction(input, key);
+    public ResponseEntity<Void> webhooksGeneric(@RequestBody Object input,
+                                                @RequestParam(value = "apikey", required = false) String key,
+                                                @RequestHeader(value = "Authorization", required = false) String authorization) {
+        return webhooksAction(input, key, authorization);
     }
 
     /**
@@ -84,8 +92,9 @@ public class CrmController {
      * @return StatusCode 200 if successful and a list of partners/customer, 401 if unauthorized, 500 if internal server error
      */
     @GetMapping("/partners")
-    public ResponseEntity<List<Customer>> getPartners(@RequestParam("apikey") String key) {
-        if (!checkApiKey(key)) {
+    public ResponseEntity<List<Customer>> getPartners(@RequestParam(value = "apikey", required = false) String key,
+                                                      @RequestHeader(value = "Authorization", required = false) String authorization) {
+        if (!checkApiKey(key, authorization)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         try {
@@ -105,8 +114,9 @@ public class CrmController {
      */
     @GetMapping("/partner/{field}/{criteria}/{search}")
     public ResponseEntity<List<Customer>> getPartner(@PathVariable("field") CrmSearchEnum.SearchField field, @PathVariable("criteria") CrmSearchEnum.SearchOperator criteria,
-                                                     @PathVariable("search") String search, @RequestParam("apikey") String key) {
-        if (!checkApiKey(key)) {
+                                                     @PathVariable("search") String search, @RequestParam(value = "apikey", required = false) String key,
+                                                     @RequestHeader(value = "Authorization", required = false) String authorization) {
+        if (!checkApiKey(key, authorization)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         try {
@@ -126,8 +136,9 @@ public class CrmController {
      */
     @GetMapping("/sales/{field}/{criteria}/{search}")
     public ResponseEntity<List<SaleOrder>> getSales(@PathVariable("field") CrmSearchEnum.SearchField field, @PathVariable("criteria") CrmSearchEnum.SearchOperator criteria,
-                                                    @PathVariable("search") Object search, @RequestParam("apikey") String key) {
-        if (!checkApiKey(key)) {
+                                                    @PathVariable("search") Object search, @RequestParam(value = "apikey", required = false) String key,
+                                                    @RequestHeader(value = "Authorization", required = false) String authorization) {
+        if (!checkApiKey(key, authorization)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         try {
@@ -144,8 +155,9 @@ public class CrmController {
      * @return StatusCode 200 if successful and a list of fields for the model, 401 if unauthorized, 500 if internal server error
      */
     @GetMapping("fields/search/{model}")
-    public ResponseEntity<Object> getFields(@PathVariable("model") CrmSearchEnum.Model model, @RequestParam("apikey") String key) {
-        if (!checkApiKey(key)) {
+    public ResponseEntity<Object> getFields(@PathVariable("model") CrmSearchEnum.Model model, @RequestParam(value = "apikey", required = false) String key,
+                                            @RequestHeader(value = "Authorization", required = false) String authorization) {
+        if (!checkApiKey(key, authorization)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         try {
@@ -162,8 +174,9 @@ public class CrmController {
      * @return StatusCode 200 if successful and a generic object for the model, 401 if unauthorized, 500 if internal server error
      */
     @GetMapping("generic/search/{model}")
-    public ResponseEntity<Object> getGeneric(@PathVariable("model") CrmSearchEnum.Model model, @RequestParam("apikey") String key) {
-        if (!checkApiKey(key)) {
+    public ResponseEntity<Object> getGeneric(@PathVariable("model") CrmSearchEnum.Model model, @RequestParam(value = "apikey", required = false) String key,
+                                            @RequestHeader(value = "Authorization", required = false) String authorization) {
+        if (!checkApiKey(key, authorization)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         try {
@@ -178,8 +191,16 @@ public class CrmController {
      * @param key API key
      * @return true if key is valid, false otherwise
      */
-    private boolean checkApiKey(String key) {
-        return Arrays.stream(apiKeys).findFirst().filter(key::equals).isPresent();
+    private boolean checkApiKey(String key, String authorization) {
+        // try Authorization header first (supports "Bearer <token>")
+        if (authorization != null && authorization.toLowerCase().startsWith("bearer ")) {
+            String token = authorization.substring(7).trim();
+            if (!token.isEmpty() && Arrays.stream(apiKeys != null ? apiKeys : new String[]{}).anyMatch(token::equals)) {
+                return true;
+            }
+        }
+        // fallback to query param
+        return key != null && Arrays.stream(apiKeys != null ? apiKeys : new String[]{}).anyMatch(key::equals);
     }
 
     /**
@@ -190,8 +211,8 @@ public class CrmController {
      * the api is used for intercept odoo webhooks, call the service method to save the webhook and give action
      * the give action method must be implemented in the service class. Override the method for your own implementation
      */
-    private ResponseEntity<Void> webhooksAction(Object input, String key) {
-        if (!checkApiKey(key)) {
+    private ResponseEntity<Void> webhooksAction(Object input, String key, String authorization) {
+        if (!checkApiKey(key, authorization)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         try {

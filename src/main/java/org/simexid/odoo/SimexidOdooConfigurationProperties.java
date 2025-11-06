@@ -39,7 +39,7 @@ public class SimexidOdooConfigurationProperties {
     /**
      * The API keys to use for the API. This is used to authenticate the API requests
      */
-    String[] apyKeys;
+    String[] apiKeys;
 
     public String getOdooApiUrl() {
         return odooApiUrl;
@@ -89,11 +89,11 @@ public class SimexidOdooConfigurationProperties {
         this.apiPath = apiPath;
     }
 
-    public String[] getApyKeys() {
-        return apyKeys;
+    public String[] getApiKeys() {
+        return apiKeys;
     }
 
-    public void setApyKeys(String[] apyKeys) {
-        this.apyKeys = apyKeys;
+    public void setApiKeys(String[] apiKeys) {
+        this.apiKeys = apiKeys;
     }
 }
