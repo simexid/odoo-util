@@ -15,7 +15,7 @@ class SimexidOdooConfigurationPropertiesTest {
         p.setOdooDb("db");
         p.setApiEnabled(true);
         p.setApiPath("path");
-        p.setApyKeys(new String[]{"a"});
+        p.setApiKeys(new String[]{"a"});
 
         assertEquals("u", p.getOdooApiUrl());
         assertEquals("user", p.getOdooUsername());
@@ -23,6 +23,6 @@ class SimexidOdooConfigurationPropertiesTest {
         assertEquals("db", p.getOdooDb());
         assertTrue(p.getApiEnabled());
         assertEquals("path", p.getApiPath());
-        assertArrayEquals(new String[]{"a"}, p.getApyKeys());
+        assertArrayEquals(new String[]{"a"}, p.getApiKeys());
     }
 }

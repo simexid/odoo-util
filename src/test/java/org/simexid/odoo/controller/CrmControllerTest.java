@@ -18,9 +18,9 @@ class CrmControllerTest {
     void testGetPartnersUnauthorized() {
         CrmServiceImpl svc = mock(CrmServiceImpl.class);
         CrmController controller = new CrmController(svc);
-        // set apiKeys to a different value -> unauthorized
+        // set apiKeys to a different value -> unauthorized (use query param)
         org.springframework.test.util.ReflectionTestUtils.setField(controller, "apiKeys", new String[]{"secret"});
-        ResponseEntity<List<Customer>> resp = controller.getPartners("invalid");
+        ResponseEntity<List<Customer>> resp = controller.getPartners("invalid", null);
         assertEquals(401, resp.getStatusCode().value());
     }
 
@@ -29,10 +29,30 @@ class CrmControllerTest {
         CrmServiceImpl svc = mock(CrmServiceImpl.class);
         when(svc.getAllPartners(null)).thenReturn(List.of(new Customer()));
         CrmController controller = new CrmController(svc);
-        // set apiKeys field to contain the key
+        // set apiKeys field to contain the key (query param)
         ReflectionTestUtils.setField(controller, "apiKeys", new String[]{"secret"});
-        ResponseEntity<List<Customer>> resp = controller.getPartners("secret");
+        ResponseEntity<List<Customer>> resp = controller.getPartners("secret", null);
         assertEquals(200, resp.getStatusCode().value());
         assertEquals(1, resp.getBody().size());
+    }
+
+    @Test
+    void testGetPartnersAuthorizedWithHeader() throws Exception {
+        CrmServiceImpl svc = mock(CrmServiceImpl.class);
+        when(svc.getAllPartners(null)).thenReturn(List.of(new Customer()));
+        CrmController controller = new CrmController(svc);
+        ReflectionTestUtils.setField(controller, "apiKeys", new String[]{"secret"});
+        ResponseEntity<List<Customer>> resp = controller.getPartners(null, "Bearer secret");
+        assertEquals(200, resp.getStatusCode().value());
+        assertEquals(1, resp.getBody().size());
+    }
+
+    @Test
+    void testGetPartnersUnauthorizedWithHeader() {
+        CrmServiceImpl svc = mock(CrmServiceImpl.class);
+        CrmController controller = new CrmController(svc);
+        ReflectionTestUtils.setField(controller, "apiKeys", new String[]{"secret"});
+        ResponseEntity<List<Customer>> resp = controller.getPartners(null, "Bearer bad");
+        assertEquals(401, resp.getStatusCode().value());
     }
 }

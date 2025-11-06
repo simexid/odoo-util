@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -42,6 +45,8 @@ public class CrmServiceImpl {
     private int uid;
     private long expiration;
 
+    private static final Logger logger = LoggerFactory.getLogger(CrmServiceImpl.class);
+
     private final XmlRpcClient xmlRpcClient;
 
     @Autowired
@@ -51,14 +56,14 @@ public class CrmServiceImpl {
 
     public int authenticate() throws Exception {
         long now = new Date().getTime();
-        if (uid >0 && now<expiration) {
+        if (uid > 0 && now < expiration) {
             return uid;
         }
         XmlRpcClientConfigImpl config = (XmlRpcClientConfigImpl) xmlRpcClient.getConfig();
-        config.setServerURL(new java.net.URL(apiUrl+"common"));
+        config.setServerURL(new java.net.URL(apiUrl + "common"));
         xmlRpcClient.setConfig(config);
         Object[] params = new Object[]{db, username, apiKey, emptyMap()};
-        uid = (int)xmlRpcClient.execute("authenticate", params);
+        uid = (int) safeExecute("authenticate", params);
         expiration = new Date().getTime() + 7200000;
         return uid;
     }
@@ -73,11 +78,11 @@ public class CrmServiceImpl {
                 "res.partner",
                 "search_read",
                 new Object[]{},
-                new HashMap<>() {{
+                new HashMap<String, Object>() {{
                     put("fields", finalFields);
                 }}
         };
-        Object result = xmlRpcClient.execute("execute_kw", params);
+        Object result = safeExecute("execute_kw", params);
         Gson gson = new Gson();
         Type customerListType = new TypeToken<List<Customer>>(){}.getType();
         return gson.fromJson(gson.toJson(result), customerListType);
@@ -96,11 +101,11 @@ public class CrmServiceImpl {
                 "res.partner",
                 "search_read",
                 searchCriteria,
-                new HashMap<>() {{
+                new HashMap<String, Object>() {{
                     put("fields", finalFields);
                 }}
         };
-        Object result = xmlRpcClient.execute("execute_kw", params);
+        Object result = safeExecute("execute_kw", params);
         Gson gson = new Gson();
         Type customerListType = new TypeToken<List<Customer>>(){}.getType();
         return gson.fromJson(gson.toJson(result), customerListType);
@@ -120,11 +125,11 @@ public class CrmServiceImpl {
                 "sale.order",
                 "search_read",
                 searchCriteria,
-                new HashMap<>() {{
+                new HashMap<String, Object>() {{
                     put("fields", finalFields);
                 }}
         };
-        Object result = xmlRpcClient.execute("execute_kw", params);
+        Object result = safeExecute("execute_kw", params);
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(SaleOrder.Partner.class, new PartnerDeserializer());
         Gson gson = gsonBuilder.create();
@@ -149,11 +154,11 @@ public class CrmServiceImpl {
         List<Object> domain = new ArrayList<>();
         domain.add(Arrays.asList("id", "in", orderLineIds));
 
-        Object result =  xmlRpcClient.execute("execute_kw", new Object[]{
+        Object result = safeExecute("execute_kw", new Object[]{
                 db, uid, apiKey,
                 "sale.order.line", "search_read",
                 new Object[]{domain},
-                new HashMap<>() {{
+                new HashMap<String, Object>() {{
                     put("fields", orderLineFields);
                 }}
         });
@@ -166,11 +171,11 @@ public class CrmServiceImpl {
 
     public Object getFields(CrmSearchEnum.Model search) throws Exception {
         setEndpoint("object");
-        return xmlRpcClient.execute("execute_kw", new Object[]{
+        return safeExecute("execute_kw", new Object[]{
                 db, uid, apiKey,
                 search.getModel(), "fields_get",
                 new Object[]{},
-                new HashMap<>() {{
+                new HashMap<String, Object>() {{
                     put("attributes", new Object[]{"string", "help", "type"});
                 }}
         });
@@ -182,28 +187,28 @@ public class CrmServiceImpl {
         Map<String, Object> fields = (Map<String, Object>) getFields(search);
         List<String> fieldNames = new ArrayList<>(fields.keySet());
 
-        return xmlRpcClient.execute("execute_kw", new Object[]{
+        return safeExecute("execute_kw", new Object[]{
                 db, uid, apiKey,
                 search.getModel(), "search_read",
                 new Object[]{},
-                new HashMap<>() {{
+                new HashMap<String, Object>() {{
                     put("fields", fieldNames.toArray());
                 }}
         });
     }
 
     public void saveWebhook(String json) {
-        return;
+        // default no-op; override in applications
     }
 
     public void giveAction(Object input) {
-        return;
+        // default no-op; override in applications
     }
 
     private void setEndpoint(String endpoint) throws Exception {
         authenticate();
         XmlRpcClientConfigImpl config = (XmlRpcClientConfigImpl) xmlRpcClient.getConfig();
-        config.setServerURL(new java.net.URL(apiUrl+endpoint));
+        config.setServerURL(new java.net.URL(apiUrl + endpoint));
         xmlRpcClient.setConfig(config);
     }
 
@@ -223,9 +228,21 @@ public class CrmServiceImpl {
             return str;
         }
         try {
-            return Integer.parseInt((String)str);
+            return Integer.parseInt((String) str);
         } catch (NumberFormatException e) {
             return str;
+        }
+    }
+
+    /**
+     * Execute XML-RPC call and convert exceptions to runtime with logging.
+     */
+    private Object safeExecute(String methodName, Object[] params) throws Exception {
+        try {
+            return xmlRpcClient.execute(methodName, params);
+        } catch (Exception e) {
+            logger.error("Error executing xmlrpc method {}", methodName, e);
+            throw e;
         }
     }
 }
