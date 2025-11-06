@@ -5,7 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 /**
- * Configuration properties for Simexid Keycloak integration.
+ * Configuration properties for Simexid Odoo integration.
  */
 @Component
 @PropertySource("classpath:odoo-util.properties")
