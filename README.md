@@ -18,14 +18,14 @@ Add the Maven dependency to your project (pom.xml):
 
 ```xml
 <dependency>
-    <groupId>com.simexid</groupId>
+    <groupId>org.simexid</groupId>
     <artifactId>odoo-util</artifactId>
     <version>0.0.4</version>
 </dependency>
 ```
 For Gradle users, add this dependency to your build.gradle file:
 ```groovy
-implementation 'org.simexid.keycloak:odoo-util:0.0.4'
+implementation("org.simexid:odoo-util:0.0.4")
 ```
 
 ## Configuration
