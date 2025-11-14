@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.5] - 2025-11-14
+
+### Changed
+
+Dependency updates:
+
+* Upgraded `spring-boot-starter`, `spring-boot-starter-web`, `spring-boot-autoconfigure-processor`, and `spring-boot-starter-test` dependencies from version `3.3.4` to `3.5.7`.
+* Upgraded `gson` dependency from `2.10.1` to `2.13.2`.
+
+Build and test plugin updates:
+
+* Updated `maven-compiler-plugin` from `3.13.0` to `3.14.1`, and `maven-surefire-plugin` from `2.22.2` to `3.5.4` (with added configuration for JUnit platform compatibility).
+* Upgraded `jacoco-maven-plugin` from `0.8.10` to `0.8.14` and `maven-javadoc-plugin` from `3.10.1` to `3.12.0`.
+
+Publishing and signing plugin updates:
+
+* Updated `maven-gpg-plugin` from `3.2.7` to `3.2.8` and `central-publishing-maven-plugin` from `0.6.0` to `0.9.0`.
+
+
 ## [0.0.4] - 2025-11-06
 
 ### Added
