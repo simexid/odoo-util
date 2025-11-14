@@ -20,12 +20,12 @@ Add the Maven dependency to your project (pom.xml):
 <dependency>
     <groupId>org.simexid</groupId>
     <artifactId>odoo-util</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 For Gradle users, add this dependency to your build.gradle file:
 ```groovy
-implementation("org.simexid:odoo-util:0.0.4")
+implementation("org.simexid:odoo-util:0.0.5")
 ```
 
 ## Configuration
@@ -444,7 +444,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ```
 MIT License
 
-Copyright (c) 2024 Pietro Saccone (Simexid)
+Copyright (c) 2025 Pietro Saccone (Simexid)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
