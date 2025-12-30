@@ -13,7 +13,6 @@ public class CustomerHook {
     private String email;
     @JsonProperty("company_name")
     private String companyName;
-    private String mobile;
     private String zip;
     private String phone;
     private String city;
@@ -66,14 +65,6 @@ public class CustomerHook {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
     }
 
     public String getZip() {

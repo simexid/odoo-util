@@ -71,7 +71,7 @@ public class CrmServiceImpl {
     public List<Customer> getAllPartners(Object[] fields) throws Exception {
         setEndpoint("object");
         if (fields == null) {
-            fields = new Object[]{"name", "email", "phone", "mobile", "street", "city", "zip", "country_id", "vat"};
+            fields = new Object[]{"name", "email", "phone", "street", "city", "zip", "country_id", "vat"};
         }
         Object[] finalFields = fields;
         Object[] params = new Object[]{db, uid, apiKey,
@@ -94,7 +94,7 @@ public class CrmServiceImpl {
         search = isNumeric(search);
         Object[] searchCriteria = setSearchCriteria(searchField, searchOperator, search);
         if (fields == null) {
-            fields = new Object[]{"name", "email", "phone", "mobile", "street", "city", "zip", "country_id", "vat"};
+            fields = new Object[]{"name", "email", "phone", "street", "city", "zip", "country_id", "vat"};
         }
         Object[] finalFields = fields;
         Object[] params = new Object[]{db, uid, apiKey,
