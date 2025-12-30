@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2025-12-31
+
+### Changed
+
+Dependency updates:
+
+* Upgraded `spring-boot-starter`, `spring-boot-starter-web`, `spring-boot-autoconfigure-processor`, and `spring-boot-starter-test` dependencies from version `3.3.7` to `3.5.9`.
+* Removed mobile field from partner model for odoo 19
+* Chaged enum respartnerid to 'id' for odoo 19
+
 ## [0.0.5] - 2025-11-14
 
 ### Changed
