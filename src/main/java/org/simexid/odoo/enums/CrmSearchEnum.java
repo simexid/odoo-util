@@ -12,7 +12,7 @@ public class CrmSearchEnum {
         name("name"),
         email("email"),
         phone("phone"),
-        partnerid("partner_id"),
+        partnerid("id"),
         partnerinvoiceid("partner_invoice_id"),
         partnershippingid("partner_shipping_id"),
         orderid("id"),
