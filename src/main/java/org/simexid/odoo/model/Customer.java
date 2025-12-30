@@ -11,7 +11,6 @@ public class Customer {
     private String city;
     private String street;
     private String name;
-    private String mobile;
     private String vat;
     private int id;
     private String email;
@@ -62,14 +61,6 @@ public class Customer {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
     }
 
     public String getVat() {

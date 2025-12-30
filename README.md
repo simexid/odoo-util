@@ -12,6 +12,11 @@
 - **Spring Boot 3.0** or higher
 - **Odoo** 17.0 or higher
 
+## Version
+
+Current version: **0.0.6** - use for **Odoo 19**, previous version does not support Odoo 19 due to changes in res.partner model (removed mobile field and changed id field).
+Previous version: **0.0.5** - use for **Odoo 17** and **Odoo 18*
+
 ## Installation
 
 Add the Maven dependency to your project (pom.xml):
@@ -20,12 +25,12 @@ Add the Maven dependency to your project (pom.xml):
 <dependency>
     <groupId>org.simexid</groupId>
     <artifactId>odoo-util</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
 </dependency>
 ```
 For Gradle users, add this dependency to your build.gradle file:
 ```groovy
-implementation("org.simexid:odoo-util:0.0.5")
+implementation("org.simexid:odoo-util:0.0.6")
 ```
 
 ## Configuration
