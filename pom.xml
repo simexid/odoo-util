@@ -7,7 +7,7 @@
     <groupId>org.simexid</groupId>
     <artifactId>odoo-util</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <name>odoo-util</name>
     <description>A library for simplifying connection with odoo CRM</description>
     <url>https://github.com/simexid/odoo-util.git</url>
@@ -37,12 +37,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>3.5.7</version>
+            <version>3.5.9</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>3.5.7</version>
+            <version>3.5.9</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.5.7</version>
+            <version>3.5.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
