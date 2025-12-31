@@ -1,9 +1,13 @@
 package org.simexid.odoo.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Odoo model class for SaleOrderLine received from webhook
@@ -34,8 +38,9 @@ public class SaleOrderLineHook {
     @JsonProperty("company_id")
     private int companyId;
 
+    // in Odoo many *_id fields can be an int or false -> use Object to be safe
     @JsonProperty("coupon_id")
-    private boolean couponId;
+    private Object couponId;
 
     @JsonProperty("create_date")
     private String createDate;
@@ -95,7 +100,7 @@ public class SaleOrderLineHook {
     private boolean isService;
 
     @JsonProperty("linked_line_id")
-    private boolean linkedLineId;
+    private Object linkedLineId;
 
     @JsonProperty("move_ids")
     private List<Integer> moveIds;
@@ -137,7 +142,7 @@ public class SaleOrderLineHook {
     private double priceUnit;
 
     @JsonProperty("pricelist_item_id")
-    private boolean pricelistItemId;
+    private Object pricelistItemId;
 
     @JsonProperty("product_custom_attribute_value_ids")
     private List<Integer> productCustomAttributeValueIds;
@@ -149,7 +154,7 @@ public class SaleOrderLineHook {
     private List<Integer> productNoVariantAttributeValueIds;
 
     @JsonProperty("product_packaging_id")
-    private boolean productPackagingId;
+    private Object productPackagingId;
 
     @JsonProperty("product_packaging_qty")
     private double productPackagingQty;
@@ -166,8 +171,9 @@ public class SaleOrderLineHook {
     @JsonProperty("product_type")
     private String productType;
 
-    @JsonProperty("product_uom")
-    private int productUom;
+    // map to product_uom_id coming from Odoo
+    @JsonProperty("product_uom_id")
+    private Integer productUomId;
 
     @JsonProperty("product_uom_category_id")
     private int productUomCategoryId;
@@ -182,7 +188,7 @@ public class SaleOrderLineHook {
     private boolean productUpdatable;
 
     @JsonProperty("project_id")
-    private boolean projectId;
+    private Object projectId;
 
     @JsonProperty("purchase_line_count")
     private int purchaseLineCount;
@@ -215,22 +221,22 @@ public class SaleOrderLineHook {
     private boolean recomputeDeliveryPrice;
 
     @JsonProperty("reward_id")
-    private boolean rewardId;
+    private Object rewardId;
 
     @JsonProperty("reward_identifier_code")
-    private boolean rewardIdentifierCode;
+    private Object rewardIdentifierCode;
 
     @JsonProperty("route_id")
-    private boolean routeId;
+    private Object routeId;
 
     @JsonProperty("sale_order_option_ids")
     private List<Integer> saleOrderOptionIds;
 
     @JsonProperty("salesman_id")
-    private boolean salesmanId;
+    private Object salesmanId;
 
     @JsonProperty("scheduled_date")
-    private boolean scheduledDate;
+    private Object scheduledDate;
 
     @JsonProperty("sequence")
     private int sequence;
@@ -242,16 +248,17 @@ public class SaleOrderLineHook {
     private String state;
 
     @JsonProperty("task_id")
-    private boolean taskId;
+    private Object taskId;
 
     @JsonProperty("tax_calculation_rounding_method")
     private String taxCalculationRoundingMethod;
 
     @JsonProperty("tax_country_id")
-    private int taxCountryId;
+    private Object taxCountryId;
 
-    @JsonProperty("tax_id")
-    private List<Integer> taxId;
+    // Odoo provides tax_ids (list) in webhook
+    @JsonProperty("tax_ids")
+    private List<Integer> taxIds;
 
     @JsonProperty("untaxed_amount_invoiced")
     private double untaxedAmountInvoiced;
@@ -270,6 +277,23 @@ public class SaleOrderLineHook {
 
     @JsonProperty("write_uid")
     private int writeUid;
+
+    // example: allowed_uom_ids
+    @JsonProperty("allowed_uom_ids")
+    private List<Integer> allowedUomIds;
+
+    // catch-all for unmapped properties
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
 
     public String getAction() {
         return action;
@@ -335,11 +359,11 @@ public class SaleOrderLineHook {
         this.companyId = companyId;
     }
 
-    public boolean isCouponId() {
+    public Object getCouponId() {
         return couponId;
     }
 
-    public void setCouponId(boolean couponId) {
+    public void setCouponId(Object couponId) {
         this.couponId = couponId;
     }
 
@@ -495,11 +519,11 @@ public class SaleOrderLineHook {
         isService = service;
     }
 
-    public boolean isLinkedLineId() {
+    public Object getLinkedLineId() {
         return linkedLineId;
     }
 
-    public void setLinkedLineId(boolean linkedLineId) {
+    public void setLinkedLineId(Object linkedLineId) {
         this.linkedLineId = linkedLineId;
     }
 
@@ -607,11 +631,11 @@ public class SaleOrderLineHook {
         this.priceUnit = priceUnit;
     }
 
-    public boolean isPricelistItemId() {
+    public Object getPricelistItemId() {
         return pricelistItemId;
     }
 
-    public void setPricelistItemId(boolean pricelistItemId) {
+    public void setPricelistItemId(Object pricelistItemId) {
         this.pricelistItemId = pricelistItemId;
     }
 
@@ -639,11 +663,11 @@ public class SaleOrderLineHook {
         this.productNoVariantAttributeValueIds = productNoVariantAttributeValueIds;
     }
 
-    public boolean isProductPackagingId() {
+    public Object getProductPackagingId() {
         return productPackagingId;
     }
 
-    public void setProductPackagingId(boolean productPackagingId) {
+    public void setProductPackagingId(Object productPackagingId) {
         this.productPackagingId = productPackagingId;
     }
 
@@ -687,12 +711,12 @@ public class SaleOrderLineHook {
         this.productType = productType;
     }
 
-    public int getProductUom() {
-        return productUom;
+    public Integer getProductUomId() {
+        return productUomId;
     }
 
-    public void setProductUom(int productUom) {
-        this.productUom = productUom;
+    public void setProductUomId(Integer productUomId) {
+        this.productUomId = productUomId;
     }
 
     public int getProductUomCategoryId() {
@@ -727,11 +751,11 @@ public class SaleOrderLineHook {
         this.productUpdatable = productUpdatable;
     }
 
-    public boolean isProjectId() {
+    public Object getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(boolean projectId) {
+    public void setProjectId(Object projectId) {
         this.projectId = projectId;
     }
 
@@ -815,27 +839,27 @@ public class SaleOrderLineHook {
         this.recomputeDeliveryPrice = recomputeDeliveryPrice;
     }
 
-    public boolean isRewardId() {
+    public Object getRewardId() {
         return rewardId;
     }
 
-    public void setRewardId(boolean rewardId) {
+    public void setRewardId(Object rewardId) {
         this.rewardId = rewardId;
     }
 
-    public boolean isRewardIdentifierCode() {
+    public Object getRewardIdentifierCode() {
         return rewardIdentifierCode;
     }
 
-    public void setRewardIdentifierCode(boolean rewardIdentifierCode) {
+    public void setRewardIdentifierCode(Object rewardIdentifierCode) {
         this.rewardIdentifierCode = rewardIdentifierCode;
     }
 
-    public boolean isRouteId() {
+    public Object getRouteId() {
         return routeId;
     }
 
-    public void setRouteId(boolean routeId) {
+    public void setRouteId(Object routeId) {
         this.routeId = routeId;
     }
 
@@ -847,19 +871,19 @@ public class SaleOrderLineHook {
         this.saleOrderOptionIds = saleOrderOptionIds;
     }
 
-    public boolean isSalesmanId() {
+    public Object getSalesmanId() {
         return salesmanId;
     }
 
-    public void setSalesmanId(boolean salesmanId) {
+    public void setSalesmanId(Object salesmanId) {
         this.salesmanId = salesmanId;
     }
 
-    public boolean isScheduledDate() {
+    public Object getScheduledDate() {
         return scheduledDate;
     }
 
-    public void setScheduledDate(boolean scheduledDate) {
+    public void setScheduledDate(Object scheduledDate) {
         this.scheduledDate = scheduledDate;
     }
 
@@ -887,11 +911,11 @@ public class SaleOrderLineHook {
         this.state = state;
     }
 
-    public boolean isTaskId() {
+    public Object getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(boolean taskId) {
+    public void setTaskId(Object taskId) {
         this.taskId = taskId;
     }
 
@@ -903,20 +927,20 @@ public class SaleOrderLineHook {
         this.taxCalculationRoundingMethod = taxCalculationRoundingMethod;
     }
 
-    public int getTaxCountryId() {
+    public Object getTaxCountryId() {
         return taxCountryId;
     }
 
-    public void setTaxCountryId(int taxCountryId) {
+    public void setTaxCountryId(Object taxCountryId) {
         this.taxCountryId = taxCountryId;
     }
 
-    public List<Integer> getTaxId() {
-        return taxId;
+    public List<Integer> getTaxIds() {
+        return taxIds;
     }
 
-    public void setTaxId(List<Integer> taxId) {
-        this.taxId = taxId;
+    public void setTaxIds(List<Integer> taxIds) {
+        this.taxIds = taxIds;
     }
 
     public double getUntaxedAmountInvoiced() {
