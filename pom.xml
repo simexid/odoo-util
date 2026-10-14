@@ -37,23 +37,23 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>3.5.9</version>
+            <version>3.5.16</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>3.5.9</version>
+            <version>3.5.16</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.13.2</version>
+            <version>2.14.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure-processor</artifactId>
             <optional>true</optional>
-            <version>3.5.7</version>
+            <version>3.5.16</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlrpc</groupId>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.5.9</version>
+            <version>3.5.16</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
