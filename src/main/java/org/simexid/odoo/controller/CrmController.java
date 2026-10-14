@@ -25,6 +25,16 @@ public class CrmController {
     @Value("${simexid.crm.api-keys}")
     private String[] apiKeys;
 
+    /**
+     * Models the generic {@code /search} endpoint may read. Empty (the default) disables it, so
+     * existing deployments expose nothing new until they opt in model by model.
+     */
+    @Value("${simexid.crm.search-models:}")
+    private String[] searchModels;
+
+    @Value("${simexid.crm.search-max-limit:500}")
+    private int searchMaxLimit;
+
     public CrmController(CrmServiceImpl crmService) {
         this.crmService = crmService;
     }
@@ -143,6 +153,41 @@ public class CrmController {
         }
         try {
             return ResponseEntity.ok(crmService.getSales(field, criteria, search, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    /**
+     * Generic read-only search: any allow-listed model, a free Odoo domain and free fields.
+     * <pre>POST /{api-path}/search
+     * {"model":"res.partner","domain":[["email","=","a@b.c"]],"fields":["name","phone"],"limit":10}</pre>
+     * @param request model, domain, fields (required), limit, offset, order
+     * @param key API key
+     * @return 200 and a list of records, 400 for a malformed request, 401 if unauthorized,
+     * 403 if the model is not in {@code simexid.crm.search-models}, 500 for an internal error
+     */
+    @PostMapping("/search")
+    public ResponseEntity<Object> search(@RequestBody SearchRequest request,
+                                         @RequestParam(value = "apikey", required = false) String key,
+                                         @RequestHeader(value = "Authorization", required = false) String authorization) {
+        if (!checkApiKey(key, authorization)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        if (request == null || request.model() == null || request.model().isBlank()
+                || request.fields() == null || request.fields().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("model and fields are required");
+        }
+        if (searchModels == null || Arrays.stream(searchModels).map(String::trim).noneMatch(request.model()::equals)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("model not allowed");
+        }
+        int limit = request.limit() == null ? Math.min(100, searchMaxLimit) : Math.min(Math.max(request.limit(), 1), searchMaxLimit);
+        int offset = request.offset() == null ? 0 : Math.max(request.offset(), 0);
+        try {
+            return ResponseEntity.ok(crmService.searchRead(request.model(), request.domain(), request.fields(),
+                    limit, offset, request.order()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }

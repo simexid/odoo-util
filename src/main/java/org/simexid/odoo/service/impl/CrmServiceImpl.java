@@ -169,6 +169,99 @@ public class CrmServiceImpl {
         return gson.fromJson(gson.toJson(result), saleOrderLineListType);
     }
 
+    /**
+     * Generic read: {@code search_read} on any model with a caller-supplied domain and fields. The
+     * library knows nothing about the model, so it works for custom Odoo modules too.
+     * Read only: it never writes. Restricting which models a caller may reach is the job of the layer
+     * that exposes this method (see {@code simexid.crm.search-models} on the REST controller).
+     *
+     * @param model  Odoo model, e.g. {@code res.partner}
+     * @param domain Odoo domain as nested lists, e.g. {@code [["partner_id","in",[1,2]]]}; null/empty = all
+     * @param fields fields to return (required)
+     * @param limit  maximum records, or null for Odoo's default (all)
+     * @param offset records to skip, or null
+     * @param order  Odoo order clause, or null
+     * @return one map per record; many2one values come back as {@code [id, "name"]}, empty fields as {@code false}
+     * @throws IllegalArgumentException for a missing model/fields or a domain value XML-RPC cannot carry
+     */
+    public List<Map<String, Object>> searchRead(String model, List<?> domain, List<String> fields,
+                                                Integer limit, Integer offset, String order) throws Exception {
+        if (model == null || model.isBlank()) {
+            throw new IllegalArgumentException("model is required");
+        }
+        if (fields == null || fields.isEmpty()) {
+            throw new IllegalArgumentException("fields is required");
+        }
+        List<Object> normalizedDomain = domain == null ? new ArrayList<>() : (List<Object>) normalizeValue(domain);
+
+        Map<String, Object> options = new HashMap<>();
+        options.put("fields", fields.toArray());
+        if (limit != null) {
+            options.put("limit", limit);
+        }
+        if (offset != null) {
+            options.put("offset", offset);
+        }
+        if (order != null && !order.isBlank()) {
+            options.put("order", order);
+        }
+
+        setEndpoint("object");
+        Object result = safeExecute("execute_kw", new Object[]{
+                db, uid, apiKey,
+                model, "search_read",
+                new Object[]{normalizedDomain},
+                options
+        });
+        return toRecords(result);
+    }
+
+    /** XML-RPC carries int, double, boolean, string and arrays: widen nothing, reject what it cannot encode. */
+    private static Object normalizeValue(Object value) {
+        if (value instanceof List<?> list) {
+            List<Object> out = new ArrayList<>(list.size());
+            for (Object item : list) {
+                out.add(normalizeValue(item));
+            }
+            return out;
+        }
+        if (value instanceof Long l) {
+            if (l > Integer.MAX_VALUE || l < Integer.MIN_VALUE) {
+                throw new IllegalArgumentException("Number out of range for XML-RPC: " + l);
+            }
+            return l.intValue();
+        }
+        if (value instanceof Float f) {
+            return f.doubleValue();
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("null is not allowed in a domain: use false for an empty value");
+        }
+        if (value instanceof Integer || value instanceof Double || value instanceof Boolean || value instanceof String) {
+            return value;
+        }
+        throw new IllegalArgumentException("Unsupported value in domain: " + value.getClass().getSimpleName());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Map<String, Object>> toRecords(Object result) {
+        List<Map<String, Object>> records = new ArrayList<>();
+        if (result instanceof Object[] rows) {
+            for (Object row : rows) {
+                if (row instanceof Map<?, ?> map) {
+                    records.add((Map<String, Object>) map);
+                }
+            }
+        } else if (result instanceof List<?> rows) {
+            for (Object row : rows) {
+                if (row instanceof Map<?, ?> map) {
+                    records.add((Map<String, Object>) map);
+                }
+            }
+        }
+        return records;
+    }
+
     public Object getFields(CrmSearchEnum.Model search) throws Exception {
         setEndpoint("object");
         return safeExecute("execute_kw", new Object[]{
