@@ -14,7 +14,7 @@
 
 ## Version
 
-Current version: **0.0.7** - use for **Odoo 19** (releases >= `0.0.6` support Odoo 19)
+Current version: **0.0.8** - use for **Odoo 19** (releases >= `0.0.6` support Odoo 19)
 
 Previous versions: <= **0.0.5** - use for **Odoo 17** and **Odoo 18** (older `res.partner` fields preserved)
 
@@ -26,12 +26,12 @@ Add the Maven dependency to your project (pom.xml):
 <dependency>
     <groupId>org.simexid</groupId>
     <artifactId>odoo-util</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
 </dependency>
 ```
 For Gradle users, add this dependency to your build.gradle file:
 ```groovy
-implementation("org.simexid:odoo-util:0.0.7")
+implementation("org.simexid:odoo-util:0.0.8")
 ```
 
 ## Configuration
@@ -66,6 +66,12 @@ simexid:
     
     # Optional: Base path for REST API endpoints (default: "crm")
     api-path: crm  # The REST endpoints will be available at /{api-path}/...
+
+    # Optional: models the generic POST /{api-path}/search may read (default: none = endpoint disabled)
+    search-models: subscription.contract,subscription.plan
+
+    # Optional: maximum records returned by /search (default: 500)
+    search-max-limit: 500
 ```
 
 ### Configuration Notes
@@ -75,6 +81,8 @@ simexid:
 - **api-keys**: Accepts multiple keys as comma-separated values; used for authentication via query parameter or Authorization header
 - **api-enabled**: Must be set to `true` to enable the REST controller endpoints
 - **api-path**: Defines the base path for all REST endpoints (e.g., `crm` makes endpoints available at `/crm/partners`, `/crm/webhooks/saleorder`, etc.)
+- **search-models**: Comma-separated Odoo model names the generic `/search` endpoint may read, e.g. a model added by a custom module. Empty by default, so nothing new is exposed until you opt in model by model
+- **search-max-limit**: Upper bound for the `limit` a `/search` caller can ask for (default 500; a request without `limit` gets 100)
 ## Usage
 
 ### Extending CrmServiceImpl
@@ -408,6 +416,30 @@ All REST endpoints support authentication via:
 | POST        | /{api-path}/webhooks/saleorderline | `SaleOrderLineHook` (body), `apikey` (param) or `Authorization` (header) | 200 OK / 401 Unauthorized / 500 Internal Server Error | Intercepts Odoo webhooks for a sale order line                |
 | POST        | /{api-path}/webhooks/partner     | `CustomerHook` (body), `apikey` (param) or `Authorization` (header) | 200 OK / 401 Unauthorized / 500 Internal Server Error | Intercepts Odoo webhooks for a customer/partner               |
 | POST        | /{api-path}/webhooks/generic     | `Object` (body), `apikey` (param) or `Authorization` (header) | 200 OK / 401 Unauthorized / 500 Internal Server Error | Intercepts Odoo webhooks for any generic object               |
+
+### Generic search (any model, free fields)
+
+`POST /{api-path}/search` reads any model listed in `simexid.crm.search-models` with a caller-supplied
+Odoo domain and fields. The library does not need to know the model, so it also works for models added by
+custom Odoo modules. It is **read only** (`search_read`), `fields` is required, and `limit` is capped.
+
+```http
+POST /crm/search?apikey={your_api_key}
+Content-Type: application/json
+
+{
+  "model": "subscription.contract",
+  "domain": [["partner_id", "in", [12, 15]], ["state", "=", "active"]],
+  "fields": ["name", "plan_id", "start_date", "next_renewal_date", "state"],
+  "limit": 50,
+  "order": "next_renewal_date asc"
+}
+```
+
+The response is a JSON array with one object per record. Odoo's own conventions apply: a many2one comes back as
+`[id, "name"]` and an empty field as `false`. Status codes: `200` OK, `400` missing model/fields or a domain value
+that cannot be sent over XML-RPC (use `false`, not `null`), `401` bad key, `403` model not in `search-models`,
+`500` Odoo error. The same method is available in Java as `CrmServiceImpl.searchRead(...)`.
 
 ### Query Endpoints
 
